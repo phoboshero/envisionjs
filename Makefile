@@ -1,16 +1,18 @@
 envision:
 	rm -rf build
 	mkdir build
-	smoosh make/build.json
+	../node_modules/smoosh/bin/smoosh make/build.json
 	# envision.js
-	cat lib/flotr2/lib/underscore.js > envision.js
+	echo "/* Self Generated Envision2 */" > envision.js
+	cat lib/flotr2/lib/underscore.js >> envision.js
 	cat lib/flotr2/lib/bean.js >> envision.js
 	cat build/flotr.js >> envision.js
 	cat lib/bonzo/bonzo.min.js >> envision.js
 	echo ";" >> envision.js
 	cat build/envision.js >> envision.js
 	# envision.min.js
-	cat lib/flotr2/lib/underscore-min.js > envision.min.js
+	echo "/* Self Generated Envision2 */" > envision.min.js
+	cat lib/flotr2/lib/underscore-min.js >> envision.min.js
 	cat lib/flotr2/lib/bean-min.js >> envision.min.js
 	echo ";" >> envision.min.js
 	cat build/flotr.min.js >> envision.min.js

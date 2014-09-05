@@ -1,3 +1,4 @@
+/* Self Generated Envision2 */
 //     Underscore.js 1.1.7
 //     (c) 2011 Jeremy Ashkenas, DocumentCloud Inc.
 //     Underscore is freely distributable under the MIT license.
@@ -1421,7 +1422,11 @@ Flotr = {
       if (v && typeof(v) === 'object') {
         if (v.constructor === Array) {
           result[i] = this._.clone(v);
-        } else if (v.constructor !== RegExp && !this._.isElement(v)) {
+        } else if (
+            v.constructor !== RegExp &&
+            !this._.isElement(v) &&
+            !v.jquery
+        ) {
           result[i] = Flotr.merge(v, (dest ? dest[i] : undefined));
         } else {
           result[i] = v;
@@ -1584,7 +1589,20 @@ Flotr = {
   noConflict : function () {
     global.Flotr = previousFlotr;
     return this;
+  },
+  additionalHandler : {
+    callback: function(name, param) {
+        console.log('callback executed in Flotr');
+        this[name](param);
+    }
   }
+};
+
+Flotr.additionalHandler['flotr:select'] = function(param) {
+    console.log('Flotr selection!');
+};
+Flotr.additionalHandler['flotr:zoom'] = function(param) {
+    console.log('default zoom: ' + param.xaxis.min + " to " + param.xaxis.max);
 };
 
 global.Flotr = Flotr;
@@ -1677,7 +1695,7 @@ Flotr.defaultOptions = {
   mouse: {
     track: false,          // => true to track the mouse, no tracking otherwise
     trackAll: false,
-    position: 'se',        // => position of the value box (default south-east)
+    position: 'se',        // => position of the value box (default south-east).  False disables.
     relative: false,       // => next to the mouse cursor
     trackFormatter: Flotr.defaultTrackFormatter, // => formats the values in the value box
     margin: 5,             // => margin in pixels of the valuebox
@@ -2065,8 +2083,13 @@ Flotr.Date = {
 
 var _ = Flotr._;
 
+function getEl (el) {
+  return (el && el.jquery) ? el[0] : el;
+}
+
 Flotr.DOM = {
   addClass: function(element, name){
+    element = getEl(element);
     var classList = (element.className ? element.className : '');
       if (_.include(classList.split(/\s+/g), name)) return;
     element.className = (classList ? classList + ' ' : '') + name;
@@ -2088,6 +2111,7 @@ Flotr.DOM = {
    * Remove all children.
    */
   empty: function(element){
+    element = getEl(element);
     element.innerHTML = '';
     /*
     if (!element) return;
@@ -2097,7 +2121,12 @@ Flotr.DOM = {
     });
     */
   },
+  remove: function (element) {
+    element = getEl(element);
+    element.parentNode.removeChild(element);
+  },
   hide: function(element){
+    element = getEl(element);
     Flotr.DOM.setStyles(element, {display:'none'});
   },
   /**
@@ -2106,6 +2135,7 @@ Flotr.DOM = {
    * @param {Element|String} Element or string to be appended.
    */
   insert: function(element, child){
+    element = getEl(element);
     if(_.isString(child))
       element.innerHTML += child;
     else if (_.isElement(child))
@@ -2113,9 +2143,11 @@ Flotr.DOM = {
   },
   // @TODO find xbrowser implementation
   opacity: function(element, opacity) {
+    element = getEl(element);
     element.style.opacity = opacity;
   },
   position: function(element, p){
+    element = getEl(element);
     if (!element.offsetParent)
       return {left: (element.offsetLeft || 0), top: (element.offsetTop || 0)};
 
@@ -2126,22 +2158,26 @@ Flotr.DOM = {
   },
   removeClass: function(element, name) {
     var classList = (element.className ? element.className : '');
+    element = getEl(element);
     element.className = _.filter(classList.split(/\s+/g), function (c) {
       if (c != name) return true; }
     ).join(' ');
   },
   setStyles: function(element, o) {
+    element = getEl(element);
     _.each(o, function (value, key) {
       element.style[key] = value;
     });
   },
   show: function(element){
+    element = getEl(element);
     Flotr.DOM.setStyles(element, {display:''});
   },
   /**
    * Return element size.
    */
   size: function(element){
+    element = getEl(element);
     return {
       height : element.offsetHeight,
       width : element.offsetWidth };
@@ -2392,22 +2428,30 @@ Graph.prototype = {
     if (x.options.margin === false) {
       p.bottom = 0;
       p.top    = 0;
-    } else {
+    } else
+    if (x.options.margin === true) {
       p.bottom += (options.grid.circular ? 0 : (x.used && x.options.showLabels ?  (x.maxLabel.height + margin) : 0)) +
                   (x.used && x.options.title ? (x.titleSize.height + margin) : 0) + maxOutset;
 
       p.top    += (options.grid.circular ? 0 : (x2.used && x2.options.showLabels ? (x2.maxLabel.height + margin) : 0)) +
                   (x2.used && x2.options.title ? (x2.titleSize.height + margin) : 0) + this.subtitleHeight + this.titleHeight + maxOutset;
+    } else {
+      p.bottom = x.options.margin;
+      p.top = x.options.margin;
     }
     if (y.options.margin === false) {
       p.left  = 0;
       p.right = 0;
-    } else {
+    } else
+    if (y.options.margin === true) {
       p.left   += (options.grid.circular ? 0 : (y.used && y.options.showLabels ?  (y.maxLabel.width + margin) : 0)) +
                   (y.used && y.options.title ? (y.titleSize.width + margin) : 0) + maxOutset;
 
       p.right  += (options.grid.circular ? 0 : (y2.used && y2.options.showLabels ? (y2.maxLabel.width + margin) : 0)) +
                   (y2.used && y2.options.title ? (y2.titleSize.width + margin) : 0) + maxOutset;
+    } else {
+      p.left = y.options.margin;
+      p.right = y.options.margin;
     }
 
     p.top = Math.floor(p.top); // In order the outline not to be blured
@@ -2658,7 +2702,17 @@ Graph.prototype = {
 
     ctx = ctx || this.ctx;
 
-    if (flotr.isIE && flotr.isIE < 9) {
+    if (
+      flotr.isIE && flotr.isIE < 9 && // IE w/o canvas
+      !flotr.isFlashCanvas // But not flash canvas
+    ) {
+
+      // Do not clip excanvas on overlay context
+      // Allow hits to overflow.
+      if (ctx === this.octx) {
+        return;
+      }
+
       // Clipping for excanvas :-(
       ctx.save();
       ctx.fillStyle = this.processColor(this.options.ieBackgroundColor);
@@ -2700,7 +2754,7 @@ Graph.prototype = {
       touchendHandler = _.bind(function (e) {
         touchend = true;
         E.stopObserving(document, 'touchend', touchendHandler);
-        E.fire(el, 'flotr:mouseup', [event, this]);
+        E.fire(el, 'flotr:mouseup', [e, this]);
         this.multitouches = null;
 
         if (!movement) {
@@ -2717,7 +2771,7 @@ Graph.prototype = {
           this.multitouches = e.touches;
         }
 
-        E.fire(el, 'flotr:mousedown', [event, this]);
+        E.fire(el, 'flotr:mousedown', [e, this]);
         this.observe(document, 'touchend', touchendHandler);
       }, this));
 
@@ -2735,7 +2789,7 @@ Graph.prototype = {
           this.multitouches = e.touches;
         } else {
           if (!touchend) {
-            E.fire(el, 'flotr:mousemove', [event, pos, this]);
+            E.fire(el, 'flotr:mousemove', [e, pos, this]);
           }
         }
         this.lastMousePos = pos;
@@ -2746,8 +2800,8 @@ Graph.prototype = {
         observe(this.overlay, 'mousedown', _.bind(this.mouseDownHandler, this)).
         observe(el, 'mousemove', _.bind(this.mouseMoveHandler, this)).
         observe(this.overlay, 'click', _.bind(this.clickHandler, this)).
-        observe(el, 'mouseout', function () {
-          E.fire(el, 'flotr:mouseout');
+        observe(el, 'mouseout', function (e) {
+          E.fire(el, 'flotr:mouseout', e);
         });
     }
   },
@@ -2806,6 +2860,7 @@ Graph.prototype = {
         canvas = D.create('canvas');
         if (typeof FlashCanvas != "undefined" && typeof canvas.getContext === 'function') {
           FlashCanvas.initElement(canvas);
+          this.isFlashCanvas = true;
         }
         canvas.className = 'flotr-'+name;
         canvas.style.cssText = 'position:absolute;left:0px;top:0px;';
@@ -3002,17 +3057,17 @@ Axis.prototype = {
     if (logarithmic) {
       this.d2p = function (dataValue) {
         return offset + orientation * (log(dataValue, options.base) - log(min, options.base)) * scale;
-      }
+      };
       this.p2d = function (pointValue) {
         return exp((offset + orientation * pointValue) / scale + log(min, options.base), options.base);
-      }
+      };
     } else {
       this.d2p = function (dataValue) {
         return offset + orientation * (dataValue - min) * scale;
-      }
+      };
       this.p2d = function (pointValue) {
         return (offset + orientation * pointValue) / scale + min;
-      }
+      };
     }
   },
 
@@ -3516,7 +3571,7 @@ Flotr.addType('lines', {
       // To allow empty values
       if (data[i][1] === null || data[i+1][1] === null) {
         if (options.fill) {
-          if (i > 0 && data[i][1]) {
+          if (i > 0 && data[i][1] !== null) {
             context.stroke();
             fill();
             start = null;
@@ -3538,21 +3593,19 @@ Flotr.addType('lines', {
       if (start === null) start = data[i];
       
       if (stack) {
-
         stack1 = stack.values[data[i][0]] || 0;
         stack2 = stack.values[data[i+1][0]] || stack.values[data[i][0]] || 0;
-
         y1 = yScale(data[i][1] + stack1);
         y2 = yScale(data[i+1][1] + stack2);
-        
-        if(incStack){
-          stack.values[data[i][0]] = data[i][1]+stack1;
-            
-          if(i == length-1)
-            stack.values[data[i+1][0]] = data[i+1][1]+stack2;
+        if (incStack) {
+          data[i].y0 = stack1;
+          stack.values[data[i][0]] = data[i][1] + stack1;
+          if (i == length-1) {
+            data[i+1].y0 = stack2;
+            stack.values[data[i+1][0]] = data[i+1][1] + stack2;
+          }
         }
-      }
-      else{
+      } else {
         y1 = yScale(data[i][1]);
         y2 = yScale(data[i+1][1]);
       }
@@ -3564,8 +3617,9 @@ Flotr.addType('lines', {
         (x1 > width && x2 > width)
       ) continue;
 
-      if((prevx != x1) || (prevy != y1 + shadowOffset))
+      if ((prevx != x1) || (prevy != y1 + shadowOffset)) {
         context.moveTo(x1, y1 + shadowOffset);
+      }
       
       prevx = x2;
       prevy = y2 + shadowOffset;
@@ -4400,6 +4454,13 @@ Flotr.addPlugin('legend', {
   callbacks: {
     'flotr:afterinit': function() {
       this.legend.insertLegend();
+    },
+    'flotr:destroy': function() {
+      var markup = this.legend.markup;
+      if (markup) {
+        this.legend.markup = null;
+        D.remove(markup);
+      }
     }
   },
   /**
@@ -4517,7 +4578,8 @@ Flotr.addPlugin('legend', {
         if(fragments.length > 0){
           var table = '<table style="font-size:smaller;color:' + options.grid.color + '">' + fragments.join('') + '</table>';
           if(legend.container){
-            D.empty(legend.container);
+            table = D.node(table);
+            this.legend.markup = table;
             D.insert(legend.container, table);
           }
           else {
@@ -4568,7 +4630,7 @@ var
   D = Flotr.DOM,
   _ = Flotr._,
   flotr = Flotr,
-  S_MOUSETRACK = 'opacity:0.7;background-color:#000;color:#fff;display:none;position:absolute;padding:2px 8px;-moz-border-radius:4px;border-radius:4px;white-space:nowrap;';
+  S_MOUSETRACK = 'opacity:0.7;background-color:#000;color:#fff;position:absolute;padding:2px 8px;-moz-border-radius:4px;border-radius:4px;white-space:nowrap;';
 
 Flotr.addPlugin('hit', {
   callbacks: {
@@ -4578,12 +4640,17 @@ Flotr.addPlugin('hit', {
     'flotr:click': function(pos) {
       var
         hit = this.hit.track(pos);
-      _.defaults(pos, hit);
+      if (hit && !_.isUndefined(hit.index)) pos.hit = hit;
     },
-    'flotr:mouseout': function() {
-      this.hit.clearHit();
+    'flotr:mouseout': function(e) {
+      if (e.relatedTarget !== this.mouseTrack) {
+        this.hit.clearHit();
+      }
     },
     'flotr:destroy': function() {
+      if (this.options.mouse.container) {
+        D.remove(this.mouseTrack);
+      }
       this.mouseTrack = null;
     }
   },
@@ -4608,7 +4675,7 @@ Flotr.addPlugin('hit', {
 
     function e(s, index) {
       _.each(_.keys(flotr.graphTypes), function (type) {
-        if (s[type] && s[type].show && this[type][method]) {
+        if (s[type] && s[type].show && !s.hide && this[type][method]) {
           options = this.getOptions(s, type);
 
           options.fill = !!s.mouse.fillColor;
@@ -4708,7 +4775,8 @@ Flotr.addPlugin('hit', {
       relX : mouse.relX,
       relY : mouse.relY,
       absX : mouse.absX,
-      absY : mouse.absY
+      absY : mouse.absY,
+      series: this.series
     };
 
     if (options.mouse.trackY &&
@@ -4799,10 +4867,14 @@ Flotr.addPlugin('hit', {
       mouseX = serie.xaxis.p2d(relX);
       mouseY = serie.yaxis.p2d(relY);
 
+      if (serie.hide) continue;
+
       for (j = data.length; j--;) {
 
         x = data[j][0];
         y = data[j][1];
+        // Add stack offset if exists
+        if (data[j].y0) y += data[j].y0;
 
         if (x === null || y === null) continue;
 
@@ -4850,21 +4922,58 @@ Flotr.addPlugin('hit', {
       bottom      = plotOffset.bottom,
       top         = plotOffset.top,
       decimals    = n.mouse.trackDecimals,
-      options     = this.options;
+      options     = this.options,
+      container   = options.mouse.container,
+      oTop        = 0,
+      oLeft       = 0,
+      offset, size, content;
 
     // Create
     if (!mouseTrack) {
-      mouseTrack = D.node('<div class="flotr-mouse-value"></div>');
+      mouseTrack = D.node('<div class="flotr-mouse-value" style="'+elStyle+'"></div>');
       this.mouseTrack = mouseTrack;
-      D.insert(this.el, mouseTrack);
+      D.insert(container || this.el, mouseTrack);
+    }
+
+    // Fill tracker:
+    if (!decimals || decimals < 0) decimals = 0;
+    if (x && x.toFixed) x = x.toFixed(decimals);
+    if (y && y.toFixed) y = y.toFixed(decimals);
+    content = n.mouse.trackFormatter({
+      x: x,
+      y: y,
+      series: n.series,
+      index: n.index,
+      nearest: n,
+      fraction: n.fraction
+    });
+    if (_.isNull(content) || _.isUndefined(content)) {
+      D.hide(mouseTrack);
+      return;
+    } else {
+      mouseTrack.innerHTML = content;
+      D.show(mouseTrack);
+    }
+
+    // Positioning
+    if (!p) {
+      return;
+    }
+    size = D.size(mouseTrack);
+    if (container) {
+      offset = D.position(this.el);
+      oTop = offset.top;
+      oLeft = offset.left;
     }
 
     if (!n.mouse.relative) { // absolute to the canvas
-
-      if      (p.charAt(0) == 'n') pos += 'top:' + (m + top) + 'px;bottom:auto;';
-      else if (p.charAt(0) == 's') pos += 'bottom:' + (m + bottom) + 'px;top:auto;';
-      if      (p.charAt(1) == 'e') pos += 'right:' + (m + right) + 'px;left:auto;';
-      else if (p.charAt(1) == 'w') pos += 'left:' + (m + left) + 'px;right:auto;';
+      pos += 'top:';
+      if      (p.charAt(0) == 'n') pos += (oTop + m + top);
+      else if (p.charAt(0) == 's') pos += (oTop - m + top + this.plotHeight - size.height);
+      pos += 'px;bottom:auto;left:';
+      if      (p.charAt(1) == 'e') pos += (oLeft - m + left + this.plotWidth - size.width);
+      else if (p.charAt(1) == 'w') pos += (oLeft + m + left);
+      pos += 'px;right:auto;';
 
     // Pie
     } else if (s.pie && s.pie.show) {
@@ -4879,42 +4988,29 @@ Flotr.addPlugin('hit', {
       pos += 'left:' + (m + left + center.x + Math.cos(bisection) * radius/2) + 'px;right:auto;';
 
     // Default
-    } else {    
-      if (/n/.test(p)) pos += 'bottom:' + (m - top - n.yaxis.d2p(n.y) + this.canvasHeight) + 'px;top:auto;';
-      else             pos += 'top:' + (m + top + n.yaxis.d2p(n.y)) + 'px;bottom:auto;';
-      if (/w/.test(p)) pos += 'right:' + (m - left - n.xaxis.d2p(n.x) + this.canvasWidth) + 'px;left:auto;';
-      else             pos += 'left:' + (m + left + n.xaxis.d2p(n.x)) + 'px;right:auto;';
+    } else {
+      pos += 'top:';
+      if (/n/.test(p)) pos += (oTop - m + top + n.yaxis.d2p(n.y) - size.height);
+      else             pos += (oTop + m + top + n.yaxis.d2p(n.y));
+      pos += 'px;bottom:auto;left:';
+      if (/w/.test(p)) pos += (oLeft - m + left + n.xaxis.d2p(n.x) - size.width);
+      else             pos += (oLeft + m + left + n.xaxis.d2p(n.x));
+      pos += 'px;right:auto;';
     }
 
-    elStyle += pos;
-    mouseTrack.style.cssText = elStyle;
-    if (!decimals || decimals < 0) decimals = 0;
-    
-    if (x && x.toFixed) x = x.toFixed(decimals);
-
-    if (y && y.toFixed) y = y.toFixed(decimals);
-
-    mouseTrack.innerHTML = n.mouse.trackFormatter({
-      x: x ,
-      y: y, 
-      series: n.series, 
-      index: n.index,
-      nearest: n,
-      fraction: n.fraction
-    });
-
-    D.show(mouseTrack);
+    // Set position
+    mouseTrack.style.cssText = elStyle + pos;
 
     if (n.mouse.relative) {
       if (!/[ew]/.test(p)) {
         // Center Horizontally
         mouseTrack.style.left =
-          (left + n.xaxis.d2p(n.x) - D.size(mouseTrack).width / 2) + 'px';
+          (oLeft + left + n.xaxis.d2p(n.x) - D.size(mouseTrack).width / 2) + 'px';
       } else
       if (!/[ns]/.test(p)) {
         // Center Vertically
         mouseTrack.style.top =
-          (top + n.yaxis.d2p(n.y) - D.size(mouseTrack).height / 2) + 'px';
+          (oTop + top + n.yaxis.d2p(n.y) - D.size(mouseTrack).height / 2) + 'px';
       }
     }
   }
@@ -5174,6 +5270,13 @@ Flotr.addPlugin('legend', {
   callbacks: {
     'flotr:afterinit': function() {
       this.legend.insertLegend();
+    },
+    'flotr:destroy': function() {
+      var markup = this.legend.markup;
+      if (markup) {
+        this.legend.markup = null;
+        D.remove(markup);
+      }
     }
   },
   /**
@@ -5291,7 +5394,8 @@ Flotr.addPlugin('legend', {
         if(fragments.length > 0){
           var table = '<table style="font-size:smaller;color:' + options.grid.color + '">' + fragments.join('') + '</table>';
           if(legend.container){
-            D.empty(legend.container);
+            table = D.node(table);
+            this.legend.markup = table;
             D.insert(legend.container, table);
           }
           else {
@@ -6793,6 +6897,7 @@ var
   V = envision,
   A = envision.adapters,
   E = Flotr.EventAdapter,
+  AH = Flotr.additionalHandler,
   DEFAULTS = A.defaultOptions;
 
 function Child (options) {
@@ -7004,6 +7109,8 @@ Child.prototype = {
           options.y2 = axes.y.d2p(y.max);
         }
 
+        AH.callback('flotr:select');
+
         graph.selection.setSelection(options);
       }
     },
@@ -7037,6 +7144,7 @@ Child.prototype = {
         }
 
         component.draw(null, options);
+        AH.callback('flotr:zoom', options);
       }
     },
 

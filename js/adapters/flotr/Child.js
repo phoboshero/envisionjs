@@ -7,6 +7,7 @@ var
   V = envision,
   A = envision.adapters,
   E = Flotr.EventAdapter,
+  AH = Flotr.additionalHandler,
   DEFAULTS = A.defaultOptions;
 
 function Child (options) {
@@ -218,6 +219,8 @@ Child.prototype = {
           options.y2 = axes.y.d2p(y.max);
         }
 
+        AH.callback('flotr:select');
+
         graph.selection.setSelection(options);
       }
     },
@@ -251,6 +254,7 @@ Child.prototype = {
         }
 
         component.draw(null, options);
+        AH.callback('flotr:zoom', options);
       }
     },
 
