@@ -3,3 +3,4 @@ build/
 .jhw-cache
 Session.vim
 .idea
+lib/flotr2

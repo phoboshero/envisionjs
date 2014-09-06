@@ -220,7 +220,6 @@ Child.prototype = {
         }
 
         AH.callback('flotr:select');
-
         graph.selection.setSelection(options);
       }
     },
@@ -274,6 +273,7 @@ Child.prototype = {
       },
       consumer : function (component) {
         component.draw();
+        AH.callback('flotr:reset', null);
       }
     },
 
@@ -319,6 +319,7 @@ Child.prototype = {
           };
         }
 
+        AH.callback('flotr:click', options);
         component.draw(null, options);
       }
     }
