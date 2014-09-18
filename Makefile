@@ -10,6 +10,7 @@ envision:
 	cat lib/bonzo/bonzo.min.js >> envision.js
 	echo ";" >> envision.js
 	cat build/envision.js >> envision.js
+	echo ";" >> envision.js
 	# envision2.min.js
 	echo "/* Self Generated Envision2 */" > envision2.min.js
 	cat lib/flotr2/lib/underscore-min.js >> envision2.min.js
@@ -20,7 +21,7 @@ envision:
 	cat lib/bonzo/bonzo.min.js >> envision2.min.js
 	echo ";" >> envision2.min.js
 	cat build/envision.min.js >> envision2.min.js
-	echo ";" >> envision.js
+	echo ";" >> envision2.min.js
 
 amd: envision
 	mkdir build/amd

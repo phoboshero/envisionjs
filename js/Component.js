@@ -61,6 +61,9 @@ function Component (options) {
     this.api = new V.adapters.flotr.Child(options.config || {});
   }
 
+  // for testing
+  // console.log(this.api);
+
   // this.id = _.uniqueId(CN_COMPONENT);
   this.preprocessors = [];
 }

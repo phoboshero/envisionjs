@@ -11,6 +11,8 @@ var
   DEFAULTS = A.defaultOptions;
 
 function Child (options) {
+    // for testing
+//    console.log(options);
   this.options = options || {};
   this.flotr = null;
   this._flotrDefaultOptions();
@@ -253,6 +255,7 @@ Child.prototype = {
         }
 
         component.draw(null, options);
+        options['elementOption'] = this.options;
         AH.callback('flotr:zoom', options);
       }
     },
@@ -273,7 +276,9 @@ Child.prototype = {
       },
       consumer : function (component) {
         component.draw();
-        AH.callback('flotr:reset', null);
+        var options = {};
+        options['elementOption'] = this.options;
+        AH.callback('flotr:reset', options);
       }
     },
 

@@ -1592,23 +1592,23 @@ Flotr = {
   },
   additionalHandler : {
     callback: function(name, param) {
-        console.log('callback executed: ' + name);
+        // console.log('callback executed: ' + name);
         this[name](param);
     }
   }
 };
 
 Flotr.additionalHandler['flotr:select'] = function(param) {
-    console.log('default select handler, do nothing!');
+    // console.log('default select handler, do nothing!');
 };
 Flotr.additionalHandler['flotr:zoom'] = function(param) {
-    console.log('default zoom: ' + param.xaxis.min + " to " + param.xaxis.max);
+    // console.log('default zoom: ' + param.xaxis.min + " to " + param.xaxis.max);
 };
 Flotr.additionalHandler['flotr:reset'] = function(param) {
-    console.log('default reset handler, do nothing');
+    // console.log('default reset handler, do nothing');
 };
 Flotr.additionalHandler['flotr:click'] = function(param) {
-    console.log('default click handler, do nothing');
+    // console.log('default click handler, do nothing');
 };
 
 global.Flotr = Flotr;
@@ -6142,6 +6142,9 @@ function Component (options) {
     this.api = new V.adapters.flotr.Child(options.config || {});
   }
 
+  // for testing
+  // console.log(this.api);
+
   // this.id = _.uniqueId(CN_COMPONENT);
   this.preprocessors = [];
 }
@@ -6907,6 +6910,8 @@ var
   DEFAULTS = A.defaultOptions;
 
 function Child (options) {
+    // for testing
+//    console.log(options);
   this.options = options || {};
   this.flotr = null;
   this._flotrDefaultOptions();
@@ -7149,6 +7154,7 @@ Child.prototype = {
         }
 
         component.draw(null, options);
+        options['elementOption'] = this.options;
         AH.callback('flotr:zoom', options);
       }
     },
@@ -7169,7 +7175,9 @@ Child.prototype = {
       },
       consumer : function (component) {
         component.draw();
-        AH.callback('flotr:reset', null);
+        var options = {};
+        options['elementOption'] = this.options;
+        AH.callback('flotr:reset', options);
       }
     },
 
