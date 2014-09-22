@@ -255,7 +255,7 @@ Child.prototype = {
         }
 
         component.draw(null, options);
-        options['elementOption'] = this.options;
+        options.elementOption = this.options;
         AH.callback('flotr:zoom', options);
       }
     },
@@ -277,7 +277,7 @@ Child.prototype = {
       consumer : function (component) {
         component.draw();
         var options = {};
-        options['elementOption'] = this.options;
+        options.elementOption = this.options;
         AH.callback('flotr:reset', options);
       }
     },

@@ -29,3 +29,9 @@
   cursor: e-resize;
 }
 
+.flotr-handles-handle.flotr-handles-pan {
+    opacity: 0.1;
+    border: none;
+    color: #fff;
+    cursor: move;
+}
