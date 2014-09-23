@@ -11,17 +11,17 @@ envision:
 	echo ";" >> envision.js
 	cat build/envision.js >> envision.js
 	echo ";" >> envision.js
-	# envision2.min.js
-	echo "/* Self Generated Envision2 */" > envision2.min.js
-	cat lib/flotr2/lib/underscore-min.js >> envision2.min.js
-	cat lib/flotr2/lib/bean-min.js >> envision2.min.js
-	echo ";" >> envision2.min.js
-	cat build/flotr.min.js >> envision2.min.js
-	echo ";" >> envision2.min.js
-	cat lib/bonzo/bonzo.min.js >> envision2.min.js
-	echo ";" >> envision2.min.js
-	cat build/envision.min.js >> envision2.min.js
-	echo ";" >> envision2.min.js
+	# envision.savvi.min.js
+	echo "/* Self Generated Envision2 */" > envision.savvi.min.js
+	cat lib/flotr2/lib/underscore-min.js >> envision.savvi.min.js
+	cat lib/flotr2/lib/bean-min.js >> envision.savvi.min.js
+	echo ";" >> envision.savvi.min.js
+	cat build/flotr.min.js >> envision.savvi.min.js
+	echo ";" >> envision.savvi.min.js
+	cat lib/bonzo/bonzo.min.js >> envision.savvi.min.js
+	echo ";" >> envision.savvi.min.js
+	cat build/envision.min.js >> envision.savvi.min.js
+	echo ";" >> envision.savvi.min.js
 
 amd: envision
 	mkdir build/amd
@@ -36,7 +36,7 @@ demo: envision
 	mkdir build/demos
 	cp lib/flotr2/flotr2.min.js build/demos
 	cp lib/flotr2/js/plugins/handles.js build/demos
-	cp envision2.min.js build/demos
+	cp envision.savvi.min.js build/demos
 	cp demos/index.html build/demos
 	cp demos/demos.css build/demos
 	cp demos/ajax.html build/demos
