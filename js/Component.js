@@ -88,9 +88,13 @@ Component.prototype = {
 
     if (!element) throw 'No element to render within.';
 
-    bonzo(element)
-      .addClass(options.name || '')
-      .append(this.node);
+    bonzo(element).addClass(options.name || '');
+    if (options.classList) {
+        for (var i = 0; i < options.classList.length; i++) {
+            bonzo(element).addClass(options.classList[i]);
+        }
+    }
+    bonzo(element).append(this.node);
     this._setDimension('width');
     this._setDimension('height');
     this.container = element;
