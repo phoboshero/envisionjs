@@ -221,7 +221,10 @@ Child.prototype = {
           options.y2 = axes.y.d2p(y.max);
         }
 
-        AH.callback('flotr:select');
+        options.elementOption = {};
+        options.elementOption.rootE = this.options.rootE;
+        options.elementOption.componentE = component.container;
+        AH.callback('flotr:select', options);
         graph.selection.setSelection(options);
       }
     },
@@ -255,7 +258,10 @@ Child.prototype = {
         }
 
         component.draw(null, options);
-        options.elementOption = this.options;
+//        options.elementOption = this.options;
+        options.elementOption = {};
+        options.elementOption.rootE = this.options.rootE;
+        options.elementOption.componentE = component.container;
         AH.callback('flotr:zoom', options);
       }
     },
@@ -277,7 +283,10 @@ Child.prototype = {
       consumer : function (component) {
         component.draw();
         var options = {};
-        options.elementOption = this.options;
+//        options.elementOption = this.options;
+        options.elementOption = {};
+        options.elementOption.rootE = this.options.rootE;
+        options.elementOption.componentE = component.container;
         AH.callback('flotr:reset', options);
       }
     },
@@ -325,6 +334,9 @@ Child.prototype = {
         }
 
         AH.callback('flotr:click', options);
+        options.elementOption = {};
+        options.elementOption.rootE = this.options.rootE;
+        options.elementOption.componentE = component.container;
         component.draw(null, options);
       }
     }
