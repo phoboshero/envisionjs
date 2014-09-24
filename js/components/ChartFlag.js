@@ -10,7 +10,7 @@
         var container = options.containerSelector;
         var chartObj = options.chartObj;
 
-        console.log(options);
+        // console.log(options);
         // inject flag container
         var flagContainer = jQuery('<div>').addClass("flagContainer")
             .css("width", options.width + "px");
