@@ -72,7 +72,7 @@
                     // Draw the flag
                     var flagDiv = jQuery("<flag>").addClass("envision-flag")
                         .css("left", leftOffset + "px")
-                        .css("top", "-30px")
+                        .css("top", "-30px");
                     flagDiv.html(flagContent);
                     var flagTipDiv = jQuery("<tooltip>").addClass("envision-flag-tooltip");
                     flagTipDiv.html(flagTooltip);
@@ -84,7 +84,7 @@
                 }
             }
         }
-    } // End of Inject Flag Container and calls
+    }; // End of Inject Flag Container and calls
 
     V.FlagContainer = EnvisionFlagContainer;
 })();
