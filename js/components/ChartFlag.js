@@ -12,8 +12,7 @@
 
         // console.log(options);
         // inject flag container
-        var flagContainer = jQuery('<div>').addClass("flagContainer")
-            .css("width", options.width + "px");
+        var flagContainer = jQuery('<div>').addClass("flagContainer");
         jQuery(options.containerSelector).find(".envision-visualization")
             .append(flagContainer);
 
@@ -24,7 +23,7 @@
         this.options= options;
         this.globalXmin = options.xMin;
         this.globalXmax = options.xMax;
-        this.chartWidth = options.width;
+        this.chartWidth = jQuery(options.containerSelector).find(".envision-visualization").width();
     }
 
     EnvisionFlagContainer.prototype = {
