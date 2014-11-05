@@ -191,6 +191,8 @@ Visualization.prototype = {
 
     bonzo(this.node).append(container);
     component.render(container);
+
+    jQuery(container).css('width', jQuery(container).width());
   },
 
   _updateClasses : function () {

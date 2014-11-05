@@ -16,11 +16,11 @@
         offset = bonzo(node).offset();
 
       this.height = offset.height;
-      this.width = offset.width;
+      this.width = jQuery(node).parent().width();
 
       bonzo(canvas)
         .attr('height', offset.height)
-        .attr('width', offset.width)
+        .attr('width', this.width)
         .css({
           position : 'absolute',
           top : '0px',
