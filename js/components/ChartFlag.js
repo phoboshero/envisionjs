@@ -70,8 +70,7 @@
 
                     // Draw the flag
                     var flagDiv = jQuery("<flag>").addClass("envision-flag")
-                        .css("left", leftOffset + "px")
-                        .css("top", "-30px");
+                        .css("left", leftOffset + "px");
                     flagDiv.html(flagContent);
                     var flagTipDiv = jQuery("<tooltip>").addClass("envision-flag-tooltip");
                     flagTipDiv.html(flagTooltip);

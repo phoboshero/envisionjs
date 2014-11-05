@@ -3,7 +3,7 @@ envision:
 	mkdir build
 	../node_modules/smoosh/bin/smoosh make/build.json
 	# envision.js
-	echo "/* Self Generated Envision2 */" > envision.js
+	echo "/* Self Generated Envision Savvi */" > envision.js
 	cat lib/flotr2/lib/underscore.js >> envision.js
 	cat lib/flotr2/lib/bean.js >> envision.js
 	cat build/flotr.js >> envision.js
@@ -12,7 +12,7 @@ envision:
 	cat build/envision.js >> envision.js
 	echo ";" >> envision.js
 	# envision.savvi.min.js
-	echo "/* Self Generated Envision2 */" > envision.savvi.min.js
+	echo "/* Self Generated Envision Savvi */" > envision.savvi.min.js
 	cat lib/flotr2/lib/underscore-min.js >> envision.savvi.min.js
 	cat lib/flotr2/lib/bean-min.js >> envision.savvi.min.js
 	echo ";" >> envision.savvi.min.js
