@@ -67,6 +67,7 @@
                 } else if (x >= datamin && x <= datamax) {
                     // prepare data
                     var leftOffset = (x - datamin) / (datamax - datamin) * this.chartWidth;
+                    leftOffset -= 13; // half the width defined by widget css
 
                     // Draw the flag
                     var flagDiv = jQuery("<flag>").addClass("envision-flag")
